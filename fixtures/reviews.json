@@ -1,0 +1,22 @@
+[
+    {
+        "model": "listings.review",
+        "pk": 1,
+        "fields": {
+            "user": 1,
+            "listing": 1,
+            "rating": 5,
+            "comment": "Прекрасная квартира, все очень понравилось!"
+        }
+    },
+    {
+        "model": "listings.review",
+        "pk": 2,
+        "fields": {
+            "user": 1,
+            "listing": 2,
+            "rating": 4,
+            "comment": "Отличный дом, но немного далеко от центра."
+        }
+    }
+]

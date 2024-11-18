@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     #local
+    #'apps.users',
     'apps.users.apps.UsersConfig',
     'apps.listings.apps.ListingsConfig',
     'apps.bookings.apps.BookingsConfig',
@@ -46,6 +47,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'rest_framework_simplejwt',
+    'rest_framework.authtoken'
     ]
 
 MIDDLEWARE = [
@@ -126,7 +128,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'ru'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Berlin'
 
 USE_I18N = True
 
@@ -143,13 +145,20 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'users.User'
+# AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = 'users.CustomUser'
 
-REST_FRAMEWORK = { 'DEFAULT_AUTHENTICATION_CLASSES':
-                       ( 'rest_framework_simplejwt.authentication.JWTAuthentication', )
-                   }
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    )
+}
 
-SIMPLE_JWT = { 'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+
+SIMPLE_JWT = { 'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
                'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
                'ROTATE_REFRESH_TOKENS': True,
                'BLACKLIST_AFTER_ROTATION': True,

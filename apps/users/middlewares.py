@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from django.utils.deprecation import MiddlewareMixin
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken

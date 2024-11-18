@@ -4,12 +4,13 @@ from django.shortcuts import render
 from rest_framework import viewsets
 from .models import Listing
 from .serializers import ListingSerializer
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
+
 
 class ListingViewSet(viewsets.ModelViewSet):
-    queryset = Listing.objects.all()
-    serializer_class = ListingSerializer
-    permission_classes = [IsAuthenticated]
+    queryset = Listing.objects.all()   # Получаем все объявления из базы данных
+    serializer_class = ListingSerializer    # Указываем сериализатор, который будем использовать
+    permission_classes = [IsAuthenticated]   # Позволяет доступ только аутентифицированным пользователям
 
     def get_queryset(self):
         if self.request.user.role == 'landlord':

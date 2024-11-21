@@ -9,10 +9,13 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 from environ import Env
 from datetime import timedelta
+import pymysql
+
+pymysql.install_as_MySQLdb()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -37,8 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     #local
-    #'apps.users',
-    'apps.users.apps.UsersConfig',
+
+    # 'apps.users.apps.UsersConfig',
     'apps.listings.apps.ListingsConfig',
     'apps.bookings.apps.BookingsConfig',
     'apps.reviews.apps.ReviewsConfig',
@@ -47,8 +50,13 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'rest_framework_simplejwt',
-    'rest_framework.authtoken'
+    'rest_framework.authtoken',
+    'apps.users',
     ]
+
+# AUTH_USER_MODEL = 'apps.users.CustomUser'
+AUTH_USER_MODEL = 'users.CustomUser'
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -65,8 +73,10 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
+        'DIRS': [
+            BASE_DIR / 'templates',  # Папка для глобальных шаблонов, если есть
+        ],
+        'APP_DIRS': True,  # Включает поиск шаблонов внутри папок приложений
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -80,7 +90,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
@@ -93,7 +102,14 @@ if env.bool('MYSQL', default=False):
             'PASSWORD': env('DB_PASSWORD'),
             'HOST': env('DB_HOST'),
             'PORT': env('DB_PORT'),
-        },
+            'OPTIONS': {
+                'ssl': {
+                    'check_hostname': False, }}
+        #     'OPTIONS': {
+        #
+        #         'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        # },
+    }
     }
 else:
     DATABASES = {
@@ -102,7 +118,6 @@ else:
             'NAME': BASE_DIR / 'db.sqlite3',
         },
     }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -122,7 +137,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -135,7 +149,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
@@ -146,9 +159,6 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# AUTH_USER_MODEL = 'users.User'
-AUTH_USER_MODEL = 'users.CustomUser'
-
 AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
 
 REST_FRAMEWORK = {
@@ -157,7 +167,14 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
-    )
+    ),
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.SearchFilter',
+        'rest_framework.filters.OrderingFilter',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 3,  # Количество объявлений на странице
 }
 
 
@@ -171,3 +188,50 @@ SIMPLE_JWT = { 'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
                'USER_TO_CLAIM': 'user_id',
                'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
                }
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'django.log'),
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'apps.users': {  # Замените на имя вашего приложения
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}
+
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}

@@ -1,19 +1,15 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+# from tutorial.quickstart.views import UserViewSet
 
-from apps.users.views.user_views import *
+from apps.users.views import RegisterView, LoginView, LogoutUserView, UserViewSet
+
+router = DefaultRouter()
+router.register(r'users', UserViewSet)
 
 urlpatterns = [
-    path('users/', UserListGenericView.as_view(), name='user-list'),
-    path('users/register/', RegisterUserGenericView.as_view(), name='user-register'),
-    path('users/login/', LoginUserView.as_view(), name='user-login'),
-    path('users/logout/', LogoutUserView.as_view(), name='user-logout'),
+    path('register/', RegisterView.as_view(), name='user-register'),
+    path('login/', LoginView.as_view(), name='user-login'),
+    path('logout/', LogoutUserView.as_view(), name='user-logout'),
+    path('', include(router.urls)),
 ]
-
-
-
-# urlpatterns = [
-#     path('register/', RegisterView.as_view(), name='register'),
-#     # path('user/<int:pk>/', UserView.as_view(), name='user'),
-#     path('user/<int:pk>/', UserView.as_view({'get': 'retrieve'}), name='user'),
-#
-# ]

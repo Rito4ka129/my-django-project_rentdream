@@ -8,3 +8,6 @@ class ListingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Listing
         fields = '__all__'  # Или укажите конкретные поля, если нужно
+
+class LogoutSerializer(serializers.Serializer):
+    pass

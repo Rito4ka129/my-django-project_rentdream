@@ -54,7 +54,7 @@ from .serializers import ListingSerializer  # Импортируйте ваш с
 from ..listings.models import Listing
 
 
-class ListingSearchView(viewsets.ViewSet):
+class SearchViewSet(viewsets.ViewSet):
     def list(self, request):
         # Реализуйте логику поиска здесь
         search_query = request.query_params.get('search', None)

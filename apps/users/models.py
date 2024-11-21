@@ -1,4 +1,3 @@
-# from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import BaseUserManager
 from django.contrib.auth.models import PermissionsMixin, UserManager, Group, Permission
@@ -57,12 +56,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         max_length=150,
         unique=True
     )
-    # phone = models.CharField(max_length=75, null=True, blank=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-    # date_joined = models.DateTimeField(name="registered", auto_now_add=True)
+    date_joined = models.DateTimeField(name="registered", auto_now_add=True)
     last_login = models.DateTimeField(null=True, blank=True)
-    # updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
     deleted = models.BooleanField(default=False)
     groups = models.ManyToManyField(Group, related_name='custom_user_set', blank=True)
@@ -82,7 +80,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         "username",
         "first_name",
         "last_name",
-        # 'email',
         'role',
     ]
 
